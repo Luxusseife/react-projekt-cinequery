@@ -1,0 +1,54 @@
+.container {
+    margin: 0 auto;
+    background-color: #0CC0DF;
+    width: 90%;
+    max-width: 372px;
+    padding: 1rem;
+}
+
+/* Formulär. */
+
+form {
+    padding: 1rem;
+    width: 100%;
+}
+
+input {
+    width: 100%;
+    margin-bottom: 1rem;
+    height: 35px;
+}
+
+input:not(input[type="submit"]) {
+    padding-left: 10px;
+}
+
+/* Logga in-knapp. */
+
+input[type="submit"] {
+    background-color: #FFBD59;
+    border: none;
+    color: #000000;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 24px;
+    font-family: "Darker Grotesque", Verdana, sans-serif;
+}
+
+input[type="submit"]:hover {
+    background-color: #ffdc00;
+    color: #000000;
+    font-weight: bold;
+}
+
+/* Text om att registrera sig. */
+
+.register {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.register-link {
+    color: black;
+}

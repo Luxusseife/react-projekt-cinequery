@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Font för brödtext. */
+root,
+html {
+    font-family: "Roboto";
+}
+
+main,
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    margin: 3rem;
+    font-family: "Darker Grotesque", Verdana, sans-serif;
+}
+
+/* Felmeddelande i formulär. */
+
+.error-message {
+    margin-top: 1rem;
+    padding: 10px 5px;
+    background-color: #ffffff;
+    color: #ec0202;
+    line-height: 1.5;
+    border-radius: 5px;
+}
+
+.error {
+    margin: 1rem auto;
+    text-align: center;
+    color: #ec0202;
+    line-height: 1.5;
+    border-radius: 5px;
+}
+
+/* Meddelande vid inhämtning av data. */
+.message {
+    margin: 1rem auto;
+    text-align: center;
+    line-height: 1.5;
+    border-radius: 5px;
+}
