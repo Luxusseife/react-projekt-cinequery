@@ -18,69 +18,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Funktion som registrerar en användare.
     const register = async (credentials: LoginCredentials) => {
 
-        // API-anrop mot backend-servern.
-        try {
-            // Fetch-anrop med metoden POST (skapa/lagra).
-            const res = await fetch("https://react-projekt-cinequery-api.onrender.com/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(credentials),
-            });
+        // Fetch-anrop med metoden POST (skapa/lagra).
+        const res = await fetch("https://react-projekt-cinequery-api.onrender.com/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentials),
+        });
 
-            // Om anropet misslyckas kastas fel med felmeddelande.
-            if (!res.ok) {
-                throw new Error("Registreringen misslyckades!");
-            }
-
-            // Vid lyckat anrop, parsas svaret till AuthResponse och lagras.
-            const data = await res.json() as AuthResponse;
-
-            // Lagrar token i localStorage för autentisering.
-            localStorage.setItem("token", data.token);
-
-            // Uppdaterar state med den inloggade användaren.
-            setUser(data.user);
-
-            // Vid anslutningsfel kastas ett fel med felmeddelande.
-        } catch (error) {
-            throw new Error("Kunde inte ansluta till servern. Försök igen!");
+        // Om anropet misslyckas kastas fel med felmeddelande.
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || "Registreringen misslyckades!");
         }
+
+        // Vid lyckat anrop, parsas svaret till AuthResponse och lagras.
+        const data = (await res.json()) as AuthResponse;
+
+        // Lagrar token i localStorage för autentisering.
+        localStorage.setItem("token", data.token);
+
+        // Uppdaterar state med den inloggade användaren.
+        setUser(data.user);
     }
 
     // Funktion som loggar in användaren.
     const login = async (credentials: LoginCredentials) => {
 
-        // API-anrop mot backend-servern.
-        try {
-            // Fetch-anrop med metoden POST (skapa/lagra).
-            const res = await fetch("https://react-projekt-cinequery-api.onrender.com/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(credentials)
-            })
+        // Fetch-anrop med metoden POST (skapa/lagra).
+        const res = await fetch("https://react-projekt-cinequery-api.onrender.com/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentials)
+        })
 
-            // Om anropet misslyckas kastas fel med felmeddelande.
-            if (!res.ok) {
-                throw new Error("Inloggningen misslyckades!");
-            }
-
-            // Vid lyckat anrop, parsas svaret till AuthResponse och lagras.
-            const data = await res.json() as AuthResponse;
-
-            // Lagrar token i localStorage för autentisering.
-            localStorage.setItem("token", data.token);
-
-            // Uppdaterar state med den inloggade användaren.
-            setUser(data.user);
-
-            // Vid anslutningsfel kastas ett fel med felmeddelande.
-        } catch (error) {
-            throw new Error("Kunde inte ansluta till servern. Försök igen!");
+        // Om anropet misslyckas kastas fel med felmeddelande.
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || "Inloggningen misslyckades!");
         }
+
+        // Vid lyckat anrop, parsas svaret till AuthResponse och lagras.
+        const data = (await res.json()) as AuthResponse;
+
+        // Lagrar token i localStorage för autentisering.
+        localStorage.setItem("token", data.token);
+
+        // Uppdaterar state med den inloggade användaren.
+        setUser(data.user);
+
     }
 
     // Funktion som loggar ut användaren.

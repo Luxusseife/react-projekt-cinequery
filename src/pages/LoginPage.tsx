@@ -12,7 +12,6 @@ const LoginPage = () => {
   // States för komponenten.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   // Flagga för att se om inloggning sker.
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -36,24 +35,21 @@ const LoginPage = () => {
     // Förhindrar default-beteende.
     e.preventDefault();
 
-    // Nollställer error-state (felmeddelanden försvinner).
-    setError("");
-
     // Försöker logga in användaren.
     try {
       // Använder angivna värden för inloggning.
       await login({ username, password });
 
-       // Sätter flaggan till true för att undvika att useEffect triggar omdirigeringen.
-       setLoginSuccess(true);
+      // Sätter flaggan till true för att undvika att useEffect triggar omdirigeringen.
+      setLoginSuccess(true);
 
       // Vid lyckad inloggning visas en toast-bekräftelse. 
       toast.success("Inloggningen lyckades!", {
         position: "top-center",
-        autoClose: 2000, 
-        pauseOnHover: true, 
+        autoClose: 2000,
+        pauseOnHover: true,
         style: {
-          backgroundColor: "#ffffff", 
+          backgroundColor: "#ffffff",
           color: "#000000",
           fontSize: "20px",
           padding: "1rem",
@@ -63,8 +59,32 @@ const LoginPage = () => {
       });
 
       // Vid misslyckad inloggning, visas ett felmeddelande.
-    } catch (error) {
-      setError("Inloggningen misslyckades. Kontrollera angivet användarnamn och lösenord.")
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message, {
+          position: "top-center",
+          autoClose: 3000,
+          pauseOnHover: true,
+          style: {
+            backgroundColor: "#ffe6e6",
+            color: "#ff0000",
+            fontSize: "20px",
+            padding: "1rem",
+          },
+        });
+      } else {
+        toast.error("Inloggningen misslyckades. Prova igen!", {
+          position: "top-center",
+          autoClose: 3000,
+          pauseOnHover: true,
+          style: {
+            backgroundColor: "#ffe6e6",
+            color: "#ff0000",
+            fontSize: "20px",
+            padding: "1rem",
+          },
+        });
+      }
     }
   }
 
@@ -91,10 +111,6 @@ const LoginPage = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)} />
-          <br />
-          {error && (
-            <div className="error-message">{error}</div>
-          )}
           <br />
           <input type="submit" value="Logga in" />
         </form>

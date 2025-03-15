@@ -13,7 +13,6 @@ const RegistrationPage = () => {
   // States för komponenten.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   // Properties från hooken useAuth.
   const { register } = useAuth();
@@ -25,9 +24,6 @@ const RegistrationPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     // Förhindrar default-beteende.
     e.preventDefault();
-
-    // Nollställer error-state (felmeddelanden försvinner).
-    setError("");
 
     // Försöker registrera användaren.
     try {
@@ -49,11 +45,36 @@ const RegistrationPage = () => {
         onClose: () => navigate("/login"),
       });
 
-      // Vid misslyckad registrering, visas ett felmeddelande.
-    } catch (error) {
-      setError("Registreringen misslyckades. Prova igen!")
+      // Vid misslyckad registrering, visas en error-toast.
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message, {
+          position: "top-center",
+          autoClose: 3000,
+          pauseOnHover: true,
+          style: {
+            backgroundColor: "#ffe6e6",
+            color: "#ff0000",
+            fontSize: "20px",
+            padding: "1rem",
+          },
+        });
+      } else {
+        toast.error("Registreringen misslyckades. Prova igen!", {
+          position: "top-center",
+          autoClose: 3000,
+          pauseOnHover: true,
+          style: {
+            backgroundColor: "#ffe6e6",
+            color: "#ff0000",
+            fontSize: "20px",
+            padding: "1rem",
+          },
+        });
+      }
     }
   }
+  
   return (
     <div>
       <h1>Registrera dig</h1>
@@ -64,7 +85,7 @@ const RegistrationPage = () => {
           <input
             type="text"
             id="username"
-            placeholder="Ditt amvändarnamn"
+            placeholder="Ditt användarnamn"
             required
             value={username}
             onChange={(e) => setUsername(e.target.value)} />
@@ -77,10 +98,6 @@ const RegistrationPage = () => {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}/>
-          <br />
-          {error && (
-            <div className="error-message">{error}</div>
-          )}
           <br />
           <input type="submit" value="Registrera" />
         </form>
