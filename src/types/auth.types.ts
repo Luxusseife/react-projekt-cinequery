@@ -19,6 +19,7 @@ export interface AuthResponse {
 // Interface som definierar authContext-strukturen. Tillhandahåller användaruppgifter och auth-funktioner.
 export interface AuthContextType {
     user: User | null,
+    register: (credentials: LoginCredentials) => Promise<void>;
     login: (credentials: LoginCredentials) => Promise<void>;
     logout: () => void;
 }

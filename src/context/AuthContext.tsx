@@ -15,6 +15,40 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Skapar state för användare.
     const [user, setUser] = useState<User | null>(null);
 
+    // Funktion som registrerar en användare.
+    const register = async (credentials: LoginCredentials) => {
+
+        // API-anrop mot backend-servern.
+        try {
+            // Fetch-anrop med metoden POST (skapa/lagra).
+            const res = await fetch("https://react-projekt-cinequery-api.onrender.com/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(credentials),
+            });
+
+            // Om anropet misslyckas kastas fel med felmeddelande.
+            if (!res.ok) {
+                throw new Error("Registreringen misslyckades!");
+            }
+
+            // Vid lyckat anrop, parsas svaret till AuthResponse och lagras.
+            const data = await res.json() as AuthResponse;
+
+            // Lagrar token i localStorage för autentisering.
+            localStorage.setItem("token", data.token);
+
+            // Uppdaterar state med den inloggade användaren.
+            setUser(data.user);
+
+            // Vid anslutningsfel kastas ett fel med felmeddelande.
+        } catch (error) {
+            throw new Error("Kunde inte ansluta till servern. Försök igen!");
+        }
+    }
+
     // Funktion som loggar in användaren.
     const login = async (credentials: LoginCredentials) => {
 
@@ -85,7 +119,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 // Sätter hämtad user som aktuell användare.
                 setUser(data.user);
             }
-        // Vid autentiseringsfel/ogiltig token...
+            // Vid autentiseringsfel/ogiltig token...
         } catch (error) {
             // Tar bort token från localStorage.
             localStorage.removeItem("token");
@@ -100,9 +134,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         validateToken();
     }, [])
 
-    // Delar användarens inloggningsuppgifter och funktioner för att logga in och ut.
+    // Delar användarens inloggningsuppgifter och funktioner för att logga in och ut samt registrera sig.
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, register, login, logout }}>
             {children}
         </AuthContext.Provider>
     )

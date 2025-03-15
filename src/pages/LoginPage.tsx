@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./LoginPage.css";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const LoginPage = () => {
 
   // States för komponenten.
@@ -11,18 +14,22 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Flagga för att se om inloggning sker.
+  const [loginSuccess, setLoginSuccess] = useState(false);
+
   // Properties från hooken useAuth.
   const { login, user } = useAuth();
 
-  // Ställer i navigate.
+  // Ställer in navigate.
   const navigate = useNavigate();
 
-  // Kontrollerar om det finns en inloggad användare. Körs varje gång user ändras.
+  // Kontrollerar om det finns en inloggad användare. Omdirigerar då till Min Sida direkt.
+  // Om inloggning sker ignoreras omdirigeringen här.
   useEffect(() => {
-    if (user) {
+    if (user && !loginSuccess) {
       navigate("/mypage");
     }
-  }, [user])
+  }, [user, loginSuccess, navigate]);
 
   // Hanterar submit av formulär.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,8 +44,23 @@ const LoginPage = () => {
       // Använder angivna värden för inloggning.
       await login({ username, password });
 
-      // Vid lyckad inloggning omdirigeras hen till admin-sidan.
-      navigate("/mypage");
+       // Sätter flaggan till true för att undvika att useEffect triggar omdirigeringen.
+       setLoginSuccess(true);
+
+      // Vid lyckad inloggning visas en toast-bekräftelse. 
+      toast.success("Inloggningen lyckades!", {
+        position: "top-center",
+        autoClose: 2000, 
+        pauseOnHover: true, 
+        style: {
+          backgroundColor: "#ffffff", 
+          color: "#000000",
+          fontSize: "20px",
+          padding: "1rem",
+        },
+        // Omdirgierar till Min sida när toastens tidsfrist gått ut.
+        onClose: () => navigate("/mypage"),
+      });
 
       // Vid misslyckad inloggning, visas ett felmeddelande.
     } catch (error) {
@@ -54,7 +76,7 @@ const LoginPage = () => {
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Användarnamn:</label>
           <input
-            type="username"
+            type="text"
             id="username"
             placeholder="Ditt användarnamn"
             required
@@ -76,6 +98,7 @@ const LoginPage = () => {
           <br />
           <input type="submit" value="Logga in" />
         </form>
+        <ToastContainer />
       </div>
       <p className="register">Inget konto än? Registrera dig <Link className="register-link" to="/register"><strong>här</strong></Link>!</p>
     </div>
