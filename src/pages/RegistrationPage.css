@@ -21,3 +21,7 @@
     font-weight: bold;
     background-color: #FFBD59;
 }
+
+.go-back:hover {
+    background-color: #ffde59;
+}

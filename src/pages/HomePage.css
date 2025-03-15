@@ -1,0 +1,56 @@
+/* Välkomsttext. */
+
+.text-container {
+    width: 100%;
+    max-width: 60ch;
+    margin: 0 auto 1rem auto;
+}
+
+.welcome-text {
+    padding: 0 1rem 1rem 1rem;
+    line-height: 1.6;
+}
+
+.container-search {
+    margin: 0 auto;
+    background-color: #FFBD59;
+    width: 90%;
+    max-width: 372px;
+    padding: 1rem;
+}
+
+/* Formulär. */
+
+.search-form {
+    padding: 1rem;
+    width: 100%;
+}
+
+.search-form input, .search-form select {
+    width: 100%;
+    margin-bottom: 1rem;
+    height: 35px;
+}
+
+.search-form input:not(input[type="submit"]), .search-form select:not(input[type="submit"])  {
+    padding-left: 10px;
+}
+
+/* Sök-knapp. */
+
+.search-form input[type="submit"] {
+    background-color: #0CC0DF;
+    border: none;
+    color: #000000;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 24px;
+    font-family: "Darker Grotesque", Verdana, sans-serif;
+}
+
+.search-form input[type="submit"]:hover {
+    background-color: #4ee0fa;
+    color: #000000;
+    font-weight: bold;
+}

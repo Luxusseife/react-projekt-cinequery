@@ -8,7 +8,7 @@ const Footer = () => {
     const { user, logout } = useAuth();
 
     return (
-        <div>
+        <>
             <footer>
                 <nav>
                     <ul className="footer-menu">
@@ -24,7 +24,7 @@ const Footer = () => {
 
                 <p className="copyright">&copy; 2025 Jenny Lind</p>
             </footer>
-        </div>
+        </>
     )
 }
 

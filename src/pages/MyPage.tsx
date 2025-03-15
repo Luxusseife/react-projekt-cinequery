@@ -7,11 +7,11 @@ const MyPage = () => {
   const { user } = useAuth();
 
   return (
-    <div>
+    <>
       <h1>Min sida</h1>
 
       <h2>{user ? user.username : ""}</h2>
-    </div>
+    </>
   )
 }
 

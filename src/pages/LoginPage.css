@@ -1,4 +1,4 @@
-.container {
+.container-reglog {
     margin: 0 auto;
     background-color: #0CC0DF;
     width: 90%;
@@ -8,24 +8,24 @@
 
 /* Formulär. */
 
-form {
+.login-form, .reg-form {
     padding: 1rem;
     width: 100%;
 }
 
-input {
+.login-form input, .reg-form input {
     width: 100%;
     margin-bottom: 1rem;
     height: 35px;
 }
 
-input:not(input[type="submit"]) {
+.login-form input:not(input[type="submit"]), .reg-form input:not(input[type="submit"]) {
     padding-left: 10px;
 }
 
 /* Logga in-knapp. */
 
-input[type="submit"] {
+.login-form input[type="submit"], .reg-form input[type="submit"] {
     background-color: #FFBD59;
     border: none;
     color: #000000;
@@ -36,8 +36,8 @@ input[type="submit"] {
     font-family: "Darker Grotesque", Verdana, sans-serif;
 }
 
-input[type="submit"]:hover {
-    background-color: #ffdc00;
+.login-form input[type="submit"]:hover, .reg-form input[type="submit"]:hover {
+    background-color: #ffde59;
     color: #000000;
     font-weight: bold;
 }

@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import "./LoginPage.css";
 
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
 
@@ -58,7 +57,7 @@ const LoginPage = () => {
         onClose: () => navigate("/mypage"),
       });
 
-      // Vid misslyckad inloggning, visas ett felmeddelande.
+      // Vid misslyckad inloggning, visas en error-toast.
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message, {
@@ -89,11 +88,11 @@ const LoginPage = () => {
   }
 
   return (
-    <div>
+    <>
       <h1>Logga in</h1>
 
-      <div className="container">
-        <form onSubmit={handleSubmit}>
+      <div className="container-reglog">
+        <form className="login-form" onSubmit={handleSubmit}>
           <label htmlFor="username">Användarnamn:</label>
           <input
             type="text"
@@ -117,7 +116,7 @@ const LoginPage = () => {
         <ToastContainer />
       </div>
       <p className="register">Inget konto än? Registrera dig <Link className="register-link" to="/register"><strong>här</strong></Link>!</p>
-    </div>
+    </>
   )
 }
 

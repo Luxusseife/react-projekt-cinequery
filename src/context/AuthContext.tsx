@@ -69,7 +69,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Uppdaterar state med den inloggade användaren.
         setUser(data.user);
-
     }
 
     // Funktion som loggar ut användaren.

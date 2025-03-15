@@ -6,7 +6,6 @@ import "./LoginPage.css";
 import "./RegistrationPage.css";
 
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const RegistrationPage = () => {
 
@@ -76,11 +75,11 @@ const RegistrationPage = () => {
   }
   
   return (
-    <div>
+    <>
       <h1>Registrera dig</h1>
 
-      <div className="container">
-        <form onSubmit={handleSubmit}>
+      <div className="container-reglog">
+        <form className="reg-form" onSubmit={handleSubmit}>
           <label htmlFor="username">Användarnamn:</label>
           <input
             type="text"
@@ -106,7 +105,7 @@ const RegistrationPage = () => {
       <div className="button-container">
       <Link className="go-back" to="/login">Tillbaka</Link>
       </div>
-    </div>
+    </>
   )
 }
 
