@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { MovieInterface } from "../types/movie.types";
+import { fetchAPI } from '../api/api';
 import "./HomePage.css";
 
 import { ToastContainer, toast } from 'react-toastify';
 
 // API-nyckel hämtas från .env-fil.
-const API_KEY = import.meta.env.VITE_API_KEY;
+//const API_KEY = import.meta.env.VITE_API_KEY;
 
 const HomePage = () => {
 
@@ -35,20 +36,8 @@ const HomePage = () => {
     // Hämtar filmer från TMDB API utifrån sökfras.
     try {
 
-      // Konfigurerar headers för API-anrop.
-      const options = {
-        method: 'GET',
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${API_KEY}`
-        }
-      };
-
-      // Hämtar sökresultat med en GET-förfrågan.
-      const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}`, options);
-
-      // Konverterar resultatet till JSON.
-      const data = await res.json();
+      const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}`;
+      const data = await fetchAPI(url);
 
       // Kontrollerar om resultat finns.
       if (data.results) {
@@ -69,12 +58,14 @@ const HomePage = () => {
         toast.error("Inga resultat hittades.");
       }
       // Fel-toast skickas.
-    } catch (error) {
-      toast.error("Något gick fel vid hämtningen.");
-      // TEST-logg.
-      console.log(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message, { autoClose: 3000 });
+      } else {
+        toast.error("Något gick fel vid hämtningen.");
+      }
     }
-  };
+  }
 
   // Funktion som återställer sökfält och resultatlista.
   const handleClear = () => {
@@ -130,6 +121,7 @@ const HomePage = () => {
       {hasSearched && (
         <div className="results">
           <h2 id="results-h2">Sökresultat på: {search}</h2>
+          {movies.length > 0 ? (
           <>
             <table className="movie-table">
               <thead>
@@ -155,6 +147,9 @@ const HomePage = () => {
               <button id="clear-results" onClick={handleClear}>Rensa sökresultat</button>
             </div>
           </>
+          ) : (
+            <p className="error">Inga resultat hittades.</p>
+          )}
         </div>
       )}
     </>
