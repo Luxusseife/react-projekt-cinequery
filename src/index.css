@@ -49,3 +49,43 @@ h1 {
     line-height: 1.5;
     border-radius: 5px;
 }
+
+/* Knappar. */
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 372px;
+    padding: 2rem;
+}
+
+.button {
+    font-family: "Darker Grotesque", Verdana, sans-serif;
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    width: 100%;
+    height: 35px;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.blue-button {
+    background-color: #0CC0DF;
+}
+
+.blue-button:hover {
+    background-color: #78e8fc;
+}
+
+.yellow-button {
+    background-color: #FFBD59;
+}
+
+.yellow-button:hover {
+    background-color: #ffde59;
+}

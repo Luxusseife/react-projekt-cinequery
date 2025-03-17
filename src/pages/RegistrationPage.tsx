@@ -72,7 +72,7 @@ const RegistrationPage = () => {
         <ToastContainer />
       </div>
       <div className="button-container">
-        <Link className="go-back" to="/login">Tillbaka</Link>
+        <Link className="yellow-button button" to="/login">Tillbaka</Link>
       </div>
     </>
   )

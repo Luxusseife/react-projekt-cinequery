@@ -44,7 +44,7 @@
 
 /* Sök-knapp och rensa-knapp. */
 
-.search-form input[type="submit"], #clear-results {
+.search-form input[type="submit"] {
     background-color: #0CC0DF;
     border: none;
     color: #000000;
@@ -61,7 +61,7 @@
 }
 
 .search-form input[type="submit"]:hover {
-    background-color: #0CC0DF;
+    background-color: #78e8fc;
     color: #000000;
     font-weight: bold;
 }

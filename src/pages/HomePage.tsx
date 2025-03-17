@@ -161,7 +161,7 @@ const HomePage = () => {
               </table>
               {/* Knapp för att rensa sökresultaten */}
               <div className="button-container">
-                <button id="clear-results" onClick={handleClear}>Rensa sökresultat</button>
+                <button id="clear-results" className="blue-button button" onClick={handleClear}>Rensa sökresultat</button>
               </div>
             </>
           ) : (
