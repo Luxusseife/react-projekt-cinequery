@@ -2,13 +2,17 @@
 
 .text-container {
     width: 100%;
-    max-width: 60ch;
+    max-width: 372px;
     margin: 0 auto 1rem auto;
 }
 
 .welcome-text {
     padding: 0 1rem 1rem 1rem;
     line-height: 1.6;
+}
+
+.welcome-text-list {
+    padding-left: 2rem;
 }
 
 .container-search {

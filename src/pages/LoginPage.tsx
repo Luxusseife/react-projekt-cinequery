@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./LoginPage.css";
 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { showSuccessToast, showErrorToast } from "../helpers/toastHelper";
 
 const LoginPage = () => {
 
@@ -42,47 +43,15 @@ const LoginPage = () => {
       // Sätter flaggan till true för att undvika att useEffect triggar omdirigeringen.
       setLoginSuccess(true);
 
-      // Vid lyckad inloggning visas en toast-bekräftelse. 
-      toast.success("Inloggningen lyckades!", {
-        position: "top-center",
-        autoClose: 2000,
-        pauseOnHover: true,
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-          fontSize: "20px",
-          padding: "1rem",
-        },
-        // Omdirgierar till Min sida när toastens tidsfrist gått ut.
-        onClose: () => navigate("/mypage"),
-      });
+      // Vid lyckad inloggning visas en toast-bekräftelse och en omdirigering sker.
+      showSuccessToast("Inloggningen lyckades!", () => navigate("/mypage"));
 
       // Vid misslyckad inloggning, visas en error-toast.
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast.error(error.message, {
-          position: "top-center",
-          autoClose: 3000,
-          pauseOnHover: true,
-          style: {
-            backgroundColor: "#ffe6e6",
-            color: "#ff0000",
-            fontSize: "20px",
-            padding: "1rem",
-          },
-        });
+        showErrorToast(error.message);
       } else {
-        toast.error("Inloggningen misslyckades. Prova igen!", {
-          position: "top-center",
-          autoClose: 3000,
-          pauseOnHover: true,
-          style: {
-            backgroundColor: "#ffe6e6",
-            color: "#ff0000",
-            fontSize: "20px",
-            padding: "1rem",
-          },
-        });
+        showErrorToast("Inloggningen misslyckades. Prova igen!");
       }
     }
   }

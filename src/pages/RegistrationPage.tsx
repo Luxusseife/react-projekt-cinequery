@@ -5,7 +5,8 @@ import { Link } from "react-router-dom";
 import "./LoginPage.css";
 import "./RegistrationPage.css";
 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { showSuccessToast, showErrorToast } from "../helpers/toastHelper";
 
 const RegistrationPage = () => {
 
@@ -29,51 +30,19 @@ const RegistrationPage = () => {
       // Använder angivna värden för registrering.
       await register({ username, password });
 
-      // Vid lyckad registrering visas en toast-bekräftelse. 
-      toast.success("Registreringen lyckades! Du kan nu logga in.", {
-        position: "top-center",
-        autoClose: 2000, 
-        pauseOnHover: true, 
-        style: {
-          backgroundColor: "#ffffff", 
-          color: "#000000",
-          fontSize: "20px",
-          padding: "1rem",
-        },
-        // Omdirgierar till inloggningssidan när toastens tidsfrist gått ut.
-        onClose: () => navigate("/login"),
-      });
+      // Vid lyckad registrering visas en toast-bekräftelse och en omdirigering sker.
+      showSuccessToast("Registreringen lyckades!", () => navigate("/login"));
 
       // Vid misslyckad registrering, visas en error-toast.
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast.error(error.message, {
-          position: "top-center",
-          autoClose: 3000,
-          pauseOnHover: true,
-          style: {
-            backgroundColor: "#ffe6e6",
-            color: "#ff0000",
-            fontSize: "20px",
-            padding: "1rem",
-          },
-        });
+        showErrorToast(error.message);
       } else {
-        toast.error("Registreringen misslyckades. Prova igen!", {
-          position: "top-center",
-          autoClose: 3000,
-          pauseOnHover: true,
-          style: {
-            backgroundColor: "#ffe6e6",
-            color: "#ff0000",
-            fontSize: "20px",
-            padding: "1rem",
-          },
-        });
+        showErrorToast("Registreringen misslyckades. Prova igen!");
       }
     }
   }
-  
+
   return (
     <>
       <h1>Registrera dig</h1>
@@ -96,14 +65,14 @@ const RegistrationPage = () => {
             placeholder="Ditt lösenord"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}/>
+            onChange={(e) => setPassword(e.target.value)} />
           <br />
           <input type="submit" value="Registrera" />
         </form>
         <ToastContainer />
       </div>
       <div className="button-container">
-      <Link className="go-back" to="/login">Tillbaka</Link>
+        <Link className="go-back" to="/login">Tillbaka</Link>
       </div>
     </>
   )

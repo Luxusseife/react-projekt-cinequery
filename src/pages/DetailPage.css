@@ -1,0 +1,22 @@
+.detail-h1 {
+    margin-bottom: 1rem;
+}
+
+.img-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.movie-info {
+    padding: 1rem;
+    line-height: 1.6;
+}
+
+#movie-poster {
+    width: 100%;
+    max-width: 350px;
+    border: 4px solid black;
+}
+

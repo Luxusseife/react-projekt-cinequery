@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { MovieInterface } from "../types/movie.types";
 import { fetchAPI } from '../api/api';
+import { Link } from "react-router-dom";
 import "./HomePage.css";
 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { showErrorToast } from "../helpers/toastHelper";
 
 // API-nyckel hämtas från .env-fil.
 //const API_KEY = import.meta.env.VITE_API_KEY;
@@ -26,7 +28,7 @@ const HomePage = () => {
 
     // Säkerställer att sökfras ej är tom.
     if (!search.trim()) {
-      toast.error("Skriv in en sökfras!");
+      showErrorToast("Skriv in en sökfras!");
       return;
     }
 
@@ -39,30 +41,23 @@ const HomePage = () => {
       const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}`;
       const data = await fetchAPI(url);
 
-      // Kontrollerar om resultat finns.
-      if (data.results) {
+      // Sorterar filmerna utifrån premiärår (nyast först).
+      const sortedMovies = data.results.sort((a: MovieInterface, b: MovieInterface) => {
+        // Konverterar release_date till årtal.
+        const yearA = a.release_date ? parseInt(a.release_date.substring(0, 4)) : 0;
+        const yearB = b.release_date ? parseInt(b.release_date.substring(0, 4)) : 0;
+        return yearB - yearA;
+      });
 
-        // Sorterar filmerna utifrån premiärår (nyast först).
-        const sortedMovies = data.results.sort((a: MovieInterface, b: MovieInterface) => {
-          // Konverterar release_date till årtal.
-          const yearA = parseInt(a.release_date.substring(0, 4));
-          const yearB = parseInt(b.release_date.substring(0, 4));
-          return yearB - yearA;
-        });
+      // Sätter state för movie till resultatet.
+      setMovies(sortedMovies);
 
-        // Sätter state för movie till resultatet.
-        setMovies(sortedMovies);
-
-        // Om resultat ej finns, skickas en fel-toast.
-      } else {
-        toast.error("Inga resultat hittades.");
-      }
       // Fel-toast skickas.
     } catch (error: unknown) {
       if (error instanceof Error) {
-        toast.error(error.message, { autoClose: 3000 });
+        showErrorToast(error.message);
       } else {
-        toast.error("Något gick fel vid hämtningen.");
+        showErrorToast("Något gick fel vid hämtningen.");
       }
     }
   }
@@ -84,9 +79,13 @@ const HomePage = () => {
         <p className="welcome-text">
           Använd vår smidiga sökfunktion nedan för att snabbt få tillgång till filmfakta.
         </p>
+        <ol className="welcome-text-list welcome-text">
+          <li>Välj en sökfiltrering.</li>
+          <li>Skriv in en sökfras.</li>
+          <li>Tryck “sök”. </li>
+        </ol>
         <p className="welcome-text">
-          Välj din sökfiltrering: filmtitel, regissör, premiärår eller genre. Skriv sedan
-          in din sökfras, tryck “sök” och voila, så har du ditt sökresultat!
+          Voila, så har du ditt sökresultat!
         </p>
       </div>
 
@@ -122,31 +121,33 @@ const HomePage = () => {
         <div className="results">
           <h2 id="results-h2">Sökresultat på: {search}</h2>
           {movies.length > 0 ? (
-          <>
-            <table className="movie-table">
-              <thead>
-                <tr>
-                  <th>Filmtitel</th>
-                  <th>År</th>
-                  <th>Info</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Loopar igenom filmresultaten och skapar en tabellrad för varje film. */}
-                {movies.map(movie => (
-                  <tr key={movie.id}>
-                    <td>{movie.title}</td>
-                    <td>{movie.release_date ? movie.release_date.substring(0, 4) : "Okänt"}</td>
-                    <td>Läs mer</td>
+            <>
+              <table className="movie-table">
+                <thead>
+                  <tr>
+                    <th>Filmtitel</th>
+                    <th>År</th>
+                    <th>Info</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {/* Knapp för att rensa sökresultaten */}
-            <div className="button-container">
-              <button id="clear-results" onClick={handleClear}>Rensa sökresultat</button>
-            </div>
-          </>
+                </thead>
+                <tbody>
+                  {/* Loopar igenom filmresultaten och skapar en tabellrad för varje film. */}
+                  {movies.map(movie => (
+                    <tr key={movie.id}>
+                      <td>{movie.title}</td>
+                      <td>{movie.release_date ? movie.release_date.substring(0, 4) : "Okänt"}</td>
+                      <td>
+                        <Link to={`/movie/${movie.id}`}>Läs mer</Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {/* Knapp för att rensa sökresultaten */}
+              <div className="button-container">
+                <button id="clear-results" onClick={handleClear}>Rensa sökresultat</button>
+              </div>
+            </>
           ) : (
             <p className="error">Inga resultat hittades.</p>
           )}

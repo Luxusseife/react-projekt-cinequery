@@ -20,6 +20,6 @@ export const fetchAPI = async (url: string) => {
     throw new Error(errorData.error || `HTTP error! Status: ${res.status}`);
   }
 
-  // Returnerar det parsade JSON-svaret
+  // Returnerar det parsade JSON-svaret.
   return await res.json();
 };
