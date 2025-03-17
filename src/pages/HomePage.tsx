@@ -1,24 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MovieInterface } from "../types/movie.types";
 import { fetchAPI } from '../api/api';
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./HomePage.css";
 
 import { ToastContainer } from 'react-toastify';
 import { showErrorToast } from "../helpers/toastHelper";
 
-// API-nyckel hämtas från .env-fil.
-//const API_KEY = import.meta.env.VITE_API_KEY;
-
 const HomePage = () => {
 
+  // Ställer in useLocation. 
+  const location = useLocation();
+
+  // Om state finns, fyll i aktuell sökfras och resultat.
+  const prevSearch = location.state?.search || "";
+  const prevMovies = location.state?.movies || [];
+
+  // Kollar av om användaren navigerat från detaljvyn.
+  const scrollToResults = location.state?.scrollToResults || false;
+
   // States.
-  const [search, setSearch] = useState("");
-  const [movies, setMovies] = useState<MovieInterface[]>([]);
+  const [search, setSearch] = useState(prevSearch);
+  const [movies, setMovies] = useState<MovieInterface[]>(prevMovies);
   const [filter, setFilter] = useState("Filmtitel");
 
   // Flagga som indikerar om en sökning gjorts.
-  const [hasSearched, setHasSearched] = useState<boolean>(false);
+  const [hasSearched, setHasSearched] = useState<boolean>(prevMovies.length > 0);
 
   // Funktion som hanterar filmsökning.
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,7 +44,6 @@ const HomePage = () => {
 
     // Hämtar filmer från TMDB API utifrån sökfras.
     try {
-
       const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(search)}`;
       const data = await fetchAPI(url);
 
@@ -52,7 +58,7 @@ const HomePage = () => {
       // Sätter state för movie till resultatet.
       setMovies(sortedMovies);
 
-      // Fel-toast skickas.
+      // Felhantering.
     } catch (error: unknown) {
       if (error instanceof Error) {
         showErrorToast(error.message);
@@ -70,6 +76,16 @@ const HomePage = () => {
     // Sätter sökningsflagga till false.
     setHasSearched(false);
   };
+
+  // Scrolla direkt till sökresultatet om användaren kommit från detaljvyn.
+  useEffect(() => {
+    if (scrollToResults) {
+      const resultsElement = document.getElementById("results");
+      if (resultsElement) {
+        resultsElement.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [scrollToResults]);
 
   return (
     <>
@@ -118,7 +134,7 @@ const HomePage = () => {
 
       {/* Visar tabell med resultat om en sökning har gjorts */}
       {hasSearched && (
-        <div className="results">
+        <div className="results" id="results">
           <h2 id="results-h2">Sökresultat på: {search}</h2>
           {movies.length > 0 ? (
             <>
@@ -137,7 +153,7 @@ const HomePage = () => {
                       <td>{movie.title}</td>
                       <td>{movie.release_date ? movie.release_date.substring(0, 4) : "Okänt"}</td>
                       <td>
-                        <Link to={`/movie/${movie.id}`}>Läs mer</Link>
+                        <Link to={`/movie/${movie.id}`} state={{ search, movies, scrollToResults: true }}>Läs mer</Link>
                       </td>
                     </tr>
                   ))}

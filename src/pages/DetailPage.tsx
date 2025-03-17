@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import { fetchAPI } from '../api/api';
 import { MovieInterface } from "../types/movie.types";
 import "./DetailPage.css";
@@ -9,6 +8,12 @@ const DetailPage = () => {
 
   // Hämtar film-id från URL:en.
   const { id } = useParams<{ id: string }>();
+
+  // Ställer in useLocation.
+  const location = useLocation();
+
+  // Tar emot skickad state från HomePage i form av sökfras och resultat.
+  const { search, movies } = location.state || { search: "", movies: [] }
 
   // States.
   const [movie, setMovie] = useState<MovieInterface | null>(null);
@@ -95,7 +100,7 @@ const DetailPage = () => {
 
       {/* Tillbaka-knapp. Skickar användaren tillbaka till startsidan. */}
       <div className="button-container">
-        <Link className="go-back" to="/">Tillbaka</Link>
+        <Link className="go-back" to="/" state={{ search, movies, scrollToResults: true }}>Tillbaka</Link>
       </div>
     </>
   )
