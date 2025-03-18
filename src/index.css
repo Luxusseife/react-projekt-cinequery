@@ -58,7 +58,17 @@ h1 {
     margin: 2rem auto;
     width: 90%;
     max-width: 372px;
-    padding: 2rem;
+}
+
+.button-container-tight {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 372px;
+    padding: 0.5rem 1rem;
 }
 
 .button {
@@ -72,6 +82,8 @@ h1 {
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
+    max-width: 308px;
+    margin: 0 auto;
 }
 
 .blue-button {
@@ -88,4 +100,65 @@ h1 {
 
 .yellow-button:hover {
     background-color: #ffde59;
+}
+
+.red-button {
+    background-color: #EC5353;
+}
+
+.red-button:hover {
+    background-color: #ed7474;
+}
+
+/* Formulär. */
+
+.login-form, 
+.reg-form, 
+.review-form {
+    padding: 1rem;
+    width: 100%;
+}
+
+.login-form input, 
+.reg-form input, 
+.review-form input, 
+.review-form textarea,
+.review-form select {
+    width: 100%;
+    margin-bottom: 1rem;
+    height: 35px;
+}
+
+.login-form input:not(input[type="submit"]), 
+.reg-form input:not(input[type="submit"]),
+.review-form input,
+.review-form select {
+    padding-left: 10px;
+}
+
+.review-form textarea {
+    font-family: "Roboto";
+    padding: 5px 10px;
+    height: 50px;
+    resize: none;
+}
+
+/* Logga in-knapp. */
+
+.login-form input[type="submit"], 
+.reg-form input[type="submit"] {
+    background-color: #FFBD59;
+    border: none;
+    color: #000000;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 24px;
+    font-family: "Darker Grotesque", Verdana, sans-serif;
+}
+
+.login-form input[type="submit"]:hover, .reg-form input[type="submit"]:hover {
+    background-color: #ffde59;
+    color: #000000;
+    font-weight: bold;
 }

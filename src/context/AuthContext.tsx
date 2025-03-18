@@ -87,6 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Om token inte hittas, returneras vyn.
         if (!token) {
+            setUser(null);
             return;
         }
 
@@ -106,6 +107,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
                 // Sätter hämtad user som aktuell användare.
                 setUser(data.user);
+                // Om det finns en ogiltig token, rensas den.
+            } else {
+                localStorage.removeItem("token");
+                setUser(null);
             }
             // Vid autentiseringsfel/ogiltig token...
         } catch (error) {

@@ -28,6 +28,18 @@ const DetailPage = () => {
   const [error, setError] = useState<string>("");
   const [hasWatched, setHasWatched] = useState<boolean>(false);
 
+  // States för recensionsformulär.
+  const [review, setReview] = useState<string | null>(null);
+  const [score, setScore] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [hasBeenReviewed, setHasBeenReviewed] = useState(false);
+
+  // Hanterar formulär-toggle.
+  const toggleReviewForm = () => {
+    setShowReviewForm(!showReviewForm);
+  };
+
   // Kör funktionen för att hämta filmdata varje gång ID i URL:en ändras.
   useEffect(() => {
 
@@ -39,6 +51,9 @@ const DetailPage = () => {
 
       // Återställer felmeddelanden.
       setError("");
+
+      // Återställer "har redan recenserat-flaggan" vid laddning av ny film.
+      setHasBeenReviewed(false); 
 
       // Hämtar filmdata från API:et utifrån ID och språkparameter (svenska).
       try {
@@ -53,7 +68,25 @@ const DetailPage = () => {
         setHasWatched(watchedMovies.includes(data.id));
 
         // TEST-logg.
-         console.log(data);
+        // console.log(data);
+
+        // Kontrollerar om den inloggade användaren redan har recenserat filmen.
+        if (user) {
+          // Skickar en GET-förfrågan till API:et. Skickar med movieId och userId. JWT-token skickas i header för endast inloggad användare kan skicka förfrågan.
+          const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews?movieId=${id}&userId=${user.id}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          });
+
+          // Om serversvaret är OK, parsas datan till JSON.
+          if (res.ok) {
+            const reviewData = await res.json();
+
+            // Om det finns minst en recension från användaren för denna film, sätts flaggan till true och recensionsknapp/formulär döljs.
+            if (reviewData.length > 0) {
+              setHasBeenReviewed(true);
+            }
+          }
+        }
 
         // Felhantering.
       } catch (error: any) {
@@ -69,7 +102,7 @@ const DetailPage = () => {
     if (id) {
       fetchMovieDetails();
     }
-  }, [id]);
+  }, [id, user]);
 
   // Hanterar klick på "Har sett filmen"-knappen.
   const handleWatchedMovie = () => {
@@ -115,6 +148,57 @@ const DetailPage = () => {
     showSuccessToast(`Du har markerat att du inte sett ${movie.title}.`);
   };
 
+  // Hanterar submit av recensionsformuläret. Lagrar recensionen i databasen.
+  const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
+    // Hindrar defaultbeteende. 
+    e.preventDefault();
+
+    // Återställer formulär-fel.
+    setFormError(null);
+
+    // Validerar formulärfält.
+    if (!review || !score || !id || !user) {
+      setFormError("Alla fält måste fyllas i.");
+      return;
+    }
+
+    // Lagrar en recension i databasen.
+    try {
+      const res = await fetch("https://react-projekt-cinequery-api.onrender.com/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          movieId: id,
+          userId: user.id,
+          rating: Number(score),
+          reviewText: review.trim(),
+        }),
+      });
+
+      // Hanterar oväntat svar och kastar då ett fel med backend-fel eller generellt meddelande.
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Något gick fel när recensionen skulle skapas.");
+      }
+
+      // Visar bekräftelse-toast.
+      showSuccessToast("Din recension har sparats!");
+
+      // Återställer och döljer formuläret.
+      setReview(null);
+      setScore(null);
+      setShowReviewForm(false);
+      setHasBeenReviewed(true);
+      // Hanterar fel om API-anropet misslyckas.
+    } catch (error: any) {
+      setFormError(error.message);
+    }
+  };
+
   // Visar laddnings- eller felmeddelande vid behov.
   if (loading) return <p className="message">Laddar filmdata...</p>;
   if (error) return <p className="error">{error}</p>;
@@ -125,8 +209,9 @@ const DetailPage = () => {
       <h1 className="detail-h1">Filmfakta om: <br />{movie.title.toUpperCase()}</h1>
 
       <div className="container-movie">
+
+        {/* Visar filmens poster om den existerar, annars visas en fallback-poster. */}
         <div className="container-poster">
-          {/* Visar filmens poster om den existerar, annars visas en fallback-poster. */}
           <div className="img-container">
             <img
               id="movie-poster"
@@ -136,8 +221,8 @@ const DetailPage = () => {
           </div>
         </div>
 
+        {/* Visar filmens information. Raderna visas endast om de har värden i datasvaret (ej "" eller null). */}
         <div className="container-info">
-          {/* Visar filmens information. Raderna visas endast om de har värden i datasvaret (ej "" eller null). */}
           <div className="movie-info">
             <p><strong>Filmtitel:</strong> {movie.title}</p>
             {movie.release_date &&
@@ -148,7 +233,7 @@ const DetailPage = () => {
                 <strong>Genre:</strong> {movie.genres.map((genre) => genre.name).join(", ")}
               </p>
             )}
-            {(movie.runtime !== null && movie.runtime !== undefined && movie.runtime !== 0) && 
+            {(movie.runtime !== null && movie.runtime !== undefined && movie.runtime !== 0) &&
               <p><strong>Filmlängd:</strong> {movie.runtime} minuter</p>
             }
             <br />
@@ -170,14 +255,71 @@ const DetailPage = () => {
         </div>
       </div>
 
-      {/* Tillbaka-knapp. Skickar användaren tillbaka till startsidan. */}
-      <div className="button-container">
+      {/* Skriv recension-knapp som endast visas för inloggad användare. Fäller ut ett formulär (och knappen försvinner). */}
+      {user && !hasBeenReviewed && (
+        <div className="button-container-tight">
+          {!showReviewForm && (
+            <button className="blue-button button" onClick={toggleReviewForm}>
+              Skriv recension
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Formulär för att skriva en recension för aktuell film. */}
+      {user && showReviewForm && !hasBeenReviewed && (
+        <div className="form-container">
+          <h2 id="form-h2">Skriv recension</h2>
+          <br />
+          <form className="review-form" onSubmit={handleReviewSubmit}>
+            <label htmlFor="movietitle">Filmtitel:</label>
+            <input type="text" name="movietitle" id="movietitle" value={movie.title} readOnly />
+
+            <label htmlFor="review">Recension:</label>
+            <textarea
+              name="review"
+              id="review"
+              value={review || ""}
+              onChange={(e) => setReview(e.target.value)}
+            />
+
+            <label htmlFor="score">Betyg:</label>
+            <select name="score" id="score" value={score || ""} onChange={(e) => setScore(e.target.value)}>
+              <option value="">Välj betyg</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+            </select>
+
+            {formError && <p className="error">{formError}</p>}
+
+            <div className="button-container-tight">
+              <button type="submit" className="blue-button button">Spara</button>
+              <button
+                type="button"
+                className="red-button button"
+                onClick={() => {
+                  setShowReviewForm(false);
+                  setReview(null);
+                  setScore(null);
+                  setFormError(null);
+                }}
+              >
+                Avbryt
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      {/* Tillbaka-knapp. Skickar användaren tillbaka till startsidan med intakta sökresultat. */}
+      <div className="button-container-tight">
         <Link className="yellow-button button" to="/" state={{ search, movies, scrollToResults: true }}>Tillbaka</Link>
       </div>
-
       <ToastContainer />
     </>
-  )
-}
+  );
+};
 
-export default DetailPage
+export default DetailPage;
