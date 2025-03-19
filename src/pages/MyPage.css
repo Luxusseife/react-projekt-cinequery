@@ -26,6 +26,10 @@ h3 {
 
 /* Recensioner. */
 
+#movietitle-h3 {
+    margin: 1rem 0;
+}
+
 .myreviews-container {
     display: flex;
     flex-direction: column;

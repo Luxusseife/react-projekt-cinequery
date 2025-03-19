@@ -101,6 +101,7 @@ const MyPage = () => {
           {myReviews.map((review) => (
             <div key={review._id} className="myreviews-listitem">
               <div className="review-item">
+              <h3 id="movietitle-h3">{review.movieTitle}</h3>
                 <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()}</p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> “{review.reviewText}”</p>

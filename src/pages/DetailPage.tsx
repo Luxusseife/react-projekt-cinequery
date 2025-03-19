@@ -193,6 +193,7 @@ const DetailPage = () => {
         },
         body: JSON.stringify({
           movieId: id,
+          movieTitle: movie?.title || "Okänd titel",
           userId: user.id,
           rating: Number(score),
           reviewText: review.trim(),
