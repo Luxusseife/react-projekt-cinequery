@@ -30,6 +30,14 @@
     margin: 0 auto 3rem auto;
 }
 
+.status {
+    font-weight: bold;
+    font-size: large;
+    color: green;
+    text-align: center;
+    margin: -1rem auto 2rem auto;
+}
+
 /* Formulär. */
 
 .form-container {
@@ -66,7 +74,7 @@
 .reviews-container {
     display: flex;
     justify-content: center;
-    margin: 1rem;
+    margin: 2rem 0;
 }
 
 .review-list {
@@ -103,5 +111,10 @@
         justify-content: left;
         margin: 0;
         padding: 1rem;
+    }
+
+    .status {
+        text-align: left;
+        margin: 1rem 0 2rem 1rem;
     }
 }

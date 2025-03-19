@@ -6,6 +6,26 @@
     padding: 1rem;
 }
 
+/* Logga in-knapp. */
+
+.login-form input[type="submit"], 
+.reg-form input[type="submit"] {
+    background-color: #FFBD59;
+    border: none;
+    color: #000000;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 24px;
+    font-family: "Darker Grotesque", Verdana, sans-serif;
+}
+
+.login-form input[type="submit"]:hover, .reg-form input[type="submit"]:hover {
+    background-color: #ffde59;
+    color: #000000;
+    font-weight: bold;
+}
+
 /* Text om att registrera sig. */
 
 .register {

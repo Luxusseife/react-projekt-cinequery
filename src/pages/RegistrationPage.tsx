@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import "./LoginPage.css";
 import "./RegistrationPage.css";
 
-import { ToastContainer } from 'react-toastify';
 import { showSuccessToast, showErrorToast } from "../helpers/toastHelper";
 
 const RegistrationPage = () => {
@@ -13,6 +12,7 @@ const RegistrationPage = () => {
   // States för komponenten.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
 
   // Properties från hooken useAuth.
   const { register } = useAuth();
@@ -36,7 +36,7 @@ const RegistrationPage = () => {
       // Vid misslyckad registrering, visas en error-toast.
     } catch (error: unknown) {
       if (error instanceof Error) {
-        showErrorToast(error.message);
+        setFormError(error.message);
       } else {
         showErrorToast("Registreringen misslyckades. Prova igen!");
       }
@@ -67,9 +67,10 @@ const RegistrationPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)} />
           <br />
+          {formError && <p className="error-message">{formError}</p>}
+          <br />
           <input type="submit" value="Registrera" />
         </form>
-        <ToastContainer />
       </div>
       <div className="button-container">
         <Link className="yellow-button button" to="/login">Tillbaka</Link>

@@ -4,7 +4,6 @@ import { fetchAPI } from '../api/api';
 import { Link, useLocation } from "react-router-dom";
 import "./HomePage.css";
 
-import { ToastContainer } from 'react-toastify';
 import { showErrorToast } from "../helpers/toastHelper";
 
 const HomePage = () => {
@@ -129,7 +128,6 @@ const HomePage = () => {
           <br />
           <input type="submit" value="Sök" />
         </form>
-        <ToastContainer />
       </div>
 
       {/* Visar tabell med resultat om en sökning har gjorts */}

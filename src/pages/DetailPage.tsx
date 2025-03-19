@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthContext";
 import { ReviewInterface } from "../types/review.types";
 import "./DetailPage.css";
 
-import { ToastContainer } from "react-toastify";
 import { showSuccessToast } from "../helpers/toastHelper";
 
 const DetailPage = () => {
@@ -66,8 +65,10 @@ const DetailPage = () => {
         setMovie(data);
 
         // Kontrollerar om filmen är markerad som sedd.
-        const watchedMovies = JSON.parse(localStorage.getItem("watchedMovies") || "[]");
-        setHasWatched(watchedMovies.includes(data.id));
+        if (user) {
+          const watchedMovies = JSON.parse(localStorage.getItem(`watchedMovies_${user.id}`) || "[]");
+          setHasWatched(watchedMovies.includes(data.id));
+        }
 
         // TEST-logg.
         // console.log(data);
@@ -125,11 +126,11 @@ const DetailPage = () => {
 
   // Hanterar klick på "Har sett filmen"-knappen.
   const handleWatchedMovie = () => {
-    // Avrbyter om filmen inte finns.
-    if (!movie) return;
+    // Avbryter om filmen eller user inte finns.
+    if (!movie || !user) return;
 
-    // Hämtar listan över lagrade "har sett"-filmer från localStorage (eller en tom array om inga setts).
-    const watchedMovies = JSON.parse(localStorage.getItem("watchedMovies") || "[]");
+    // Hämtar listan över lagrade "har sett"-filmer från inloggad användares localStorage (eller en tom array om inga setts).
+    const watchedMovies = JSON.parse(localStorage.getItem(`watchedMovies_${user.id}`) || "[]");
 
     // Kontrollerar om aktuell film redan är lagrad.
     if (!watchedMovies.includes(movie.id)) {
@@ -137,7 +138,7 @@ const DetailPage = () => {
       const updatedMovies = [...watchedMovies, movie.id];
 
       // Uppdaterar localStorage med den nya listan.
-      localStorage.setItem("watchedMovies", JSON.stringify(updatedMovies));
+      localStorage.setItem(`watchedMovies_${user.id}`, JSON.stringify(updatedMovies));
 
       // Uppdaterar visningsstatus.
       setHasWatched(true);
@@ -149,16 +150,16 @@ const DetailPage = () => {
 
   // Hanterar "Har inte sett filmen"-knappen.
   const handleNotWatchedMovie = () => {
-    if (!movie) return;
+    if (!movie || !user) return;
 
     // Hämtar listan över lagrade "har sett"-filmer från localStorage (eller en tom array om inga setts).
-    const watchedMovies = JSON.parse(localStorage.getItem("watchedMovies") || "[]");
+    const watchedMovies = JSON.parse(localStorage.getItem(`watchedMovies_${user.id}`) || "[]");
 
     // Filtrerar bort den aktuella filmen.
     const updatedMovies = watchedMovies.filter((movieId: number) => movieId !== movie.id);
 
     // Uppdaterar localStorage med den nya listan.
-    localStorage.setItem("watchedMovies", JSON.stringify(updatedMovies));
+    localStorage.setItem(`watchedMovies_${user.id}`, JSON.stringify(updatedMovies));
 
     // Uppdaterar visningsstatus.
     setHasWatched(false);
@@ -212,6 +213,7 @@ const DetailPage = () => {
       setScore(null);
       setShowReviewForm(false);
       setHasBeenReviewed(true);
+      await fetchMovieReviews(); 
 
       // Hanterar fel om API-anropet misslyckas.
     } catch (error: any) {
@@ -268,12 +270,17 @@ const DetailPage = () => {
               {!hasWatched ? (
                 <button className="blue-button button" id="watched-button" onClick={handleWatchedMovie}>Har sett filmen</button>
               ) : (
-                <button className="blue-button button" id="not-watched-button" onClick={handleNotWatchedMovie}>Har inte sett filmen</button>
+                <button className="grey-button button" id="not-watched-button" onClick={handleNotWatchedMovie}>Har inte sett filmen</button>
               )}
             </div>
           )}
+          {user && hasWatched && (
+            <p className="status">Du har markerat att du sett denna film.</p>
+          )}
         </div>
       </div>
+
+      <div className="line"></div>
 
       {/* Alla lagrade recensioner för aktuell film visas (eller ingen om noll recensioner). */}
       <h2 id="reviews-h2">Recensioner</h2>
@@ -355,7 +362,6 @@ const DetailPage = () => {
       <div className="button-container-tight">
         <Link className="yellow-button button" to="/" state={{ search, movies, scrollToResults: true }}>Tillbaka</Link>
       </div>
-      <ToastContainer />
     </>
   );
 };

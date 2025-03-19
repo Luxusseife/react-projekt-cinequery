@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 
 // Konfigurering av toast-meddelande.
-const defaultOptions = {
+export const defaultOptions = {
   position: "top-center" as const,
   autoClose: 3000,
   pauseOnHover: true,

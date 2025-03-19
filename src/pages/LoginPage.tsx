@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "./LoginPage.css";
 
-import { ToastContainer } from 'react-toastify';
 import { showSuccessToast, showErrorToast } from "../helpers/toastHelper";
 
 const LoginPage = () => {
@@ -12,6 +11,7 @@ const LoginPage = () => {
   // States för komponenten.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState("");
 
   // Flagga för att se om inloggning sker.
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -43,13 +43,16 @@ const LoginPage = () => {
       // Sätter flaggan till true för att undvika att useEffect triggar omdirigeringen.
       setLoginSuccess(true);
 
+      // Rensar felmeddelanden.
+      setFormError("");
+
       // Vid lyckad inloggning visas en toast-bekräftelse och en omdirigering sker.
       showSuccessToast("Inloggningen lyckades!", () => navigate("/mypage"));
 
       // Vid misslyckad inloggning, visas en error-toast.
     } catch (error: unknown) {
       if (error instanceof Error) {
-        showErrorToast(error.message);
+        setFormError(error.message);
       } else {
         showErrorToast("Inloggningen misslyckades. Prova igen!");
       }
@@ -80,9 +83,10 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)} />
           <br />
+          {formError && <p className="error-message">{formError}</p>}
+          <br />
           <input type="submit" value="Logga in" />
         </form>
-        <ToastContainer />
       </div>
       <p className="register">Inget konto än? Registrera dig <Link className="register-link" to="/register"><strong>här</strong></Link>!</p>
     </>
