@@ -25,7 +25,7 @@ const DetailPage = () => {
   // States.
   const [movie, setMovie] = useState<MovieInterface | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const [hasWatched, setHasWatched] = useState<boolean>(false);
   const [reviews, setReviews] = useState<ReviewInterface[]>([]);
 
@@ -51,7 +51,7 @@ const DetailPage = () => {
       setLoading(true);
 
       // Återställer felmeddelanden.
-      setError("");
+      setError(null);
 
       // Återställer "har redan recenserat-flaggan" vid laddning av ny film.
       setHasBeenReviewed(false);
@@ -280,7 +280,7 @@ const DetailPage = () => {
         </div>
       </div>
 
-      <div className="line"></div>
+      <div className="line-detail"></div>
 
       {/* Alla lagrade recensioner för aktuell film visas (eller ingen om noll recensioner). */}
       <h2 id="reviews-h2">Recensioner</h2>

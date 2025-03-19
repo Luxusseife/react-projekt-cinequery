@@ -11,7 +11,7 @@ const LoginPage = () => {
   // States för komponenten.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Flagga för att se om inloggning sker.
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -44,7 +44,7 @@ const LoginPage = () => {
       setLoginSuccess(true);
 
       // Rensar felmeddelanden.
-      setFormError("");
+      setFormError(null);
 
       // Vid lyckad inloggning visas en toast-bekräftelse och en omdirigering sker.
       showSuccessToast("Inloggningen lyckades!", () => navigate("/mypage"));

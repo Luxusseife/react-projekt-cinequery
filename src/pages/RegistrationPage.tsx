@@ -12,7 +12,7 @@ const RegistrationPage = () => {
   // States för komponenten.
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Properties från hooken useAuth.
   const { register } = useAuth();
@@ -29,6 +29,9 @@ const RegistrationPage = () => {
     try {
       // Använder angivna värden för registrering.
       await register({ username, password });
+
+      // Rensar felmeddelanden.
+      setFormError(null);
 
       // Vid lyckad registrering visas en toast-bekräftelse och en omdirigering sker.
       showSuccessToast("Registreringen lyckades!", () => navigate("/login"));

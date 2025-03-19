@@ -19,7 +19,7 @@ const HomePage = () => {
   const scrollToResults = location.state?.scrollToResults || false;
 
   // States.
-  const [search, setSearch] = useState(prevSearch);
+  const [search, setSearch] = useState<string>(prevSearch);
   const [movies, setMovies] = useState<MovieInterface[]>(prevMovies);
   const [filter, setFilter] = useState("Filmtitel");
 
