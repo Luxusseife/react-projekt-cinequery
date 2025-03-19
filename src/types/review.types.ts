@@ -1,10 +1,13 @@
 // Interface som definierar recensionsstruktur.
 export interface ReviewInterface {
-    id: string,
-    movieId: string,
-    userId: string,
-    rating: number,
-    reviewText: string,
-    createdAt: string,
-    updatedAt?: string
+    _id: string;
+    movieId: string;
+    userId: {
+        _id: string;
+        username: string;
+    };
+    rating: number;
+    reviewText: string;
+    createdAt: string;
+    updatedAt?: string;
 }

@@ -3,6 +3,7 @@ import { Link, useParams, useLocation } from "react-router-dom";
 import { fetchAPI } from '../api/api';
 import { MovieInterface } from "../types/movie.types";
 import { useAuth } from "../context/AuthContext";
+import { ReviewInterface } from "../types/review.types";
 import "./DetailPage.css";
 
 import { ToastContainer } from "react-toastify";
@@ -27,13 +28,14 @@ const DetailPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [hasWatched, setHasWatched] = useState<boolean>(false);
+  const [reviews, setReviews] = useState<ReviewInterface[]>([]);
 
   // States för recensionsformulär.
   const [review, setReview] = useState<string | null>(null);
   const [score, setScore] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [hasBeenReviewed, setHasBeenReviewed] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState<boolean>(false);
+  const [hasBeenReviewed, setHasBeenReviewed] = useState<boolean>(false);
 
   // Hanterar formulär-toggle.
   const toggleReviewForm = () => {
@@ -53,7 +55,7 @@ const DetailPage = () => {
       setError("");
 
       // Återställer "har redan recenserat-flaggan" vid laddning av ny film.
-      setHasBeenReviewed(false); 
+      setHasBeenReviewed(false);
 
       // Hämtar filmdata från API:et utifrån ID och språkparameter (svenska).
       try {
@@ -98,11 +100,28 @@ const DetailPage = () => {
       }
     };
 
-    // Om ett ID finns i URL:en, anropas funktionen.
+    // Om ett ID finns i URL:en, anropas funktionerna.
     if (id) {
       fetchMovieDetails();
+      fetchMovieReviews();
     }
   }, [id, user]);
+
+  // Hämtar lagrade recensioner om aktuell film.
+  const fetchMovieReviews = async () => {
+    try {
+      const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews/movie/${id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setReviews(data);
+
+        // TEST-logg.
+        // console.log(id);
+      }
+    } catch (error) {
+      console.error("Kunde inte hämta recensioner:", error);
+    }
+  };
 
   // Hanterar klick på "Har sett filmen"-knappen.
   const handleWatchedMovie = () => {
@@ -188,11 +207,12 @@ const DetailPage = () => {
       // Visar bekräftelse-toast.
       showSuccessToast("Din recension har sparats!");
 
-      // Återställer och döljer formuläret.
+      // Återställer och döljer formuläret samt knapp.
       setReview(null);
       setScore(null);
       setShowReviewForm(false);
       setHasBeenReviewed(true);
+
       // Hanterar fel om API-anropet misslyckas.
     } catch (error: any) {
       setFormError(error.message);
@@ -246,11 +266,29 @@ const DetailPage = () => {
           {user && (
             <div className="button-container">
               {!hasWatched ? (
-                <button className="blue-button button" onClick={handleWatchedMovie}>Har sett filmen</button>
+                <button className="blue-button button" id="watched-button" onClick={handleWatchedMovie}>Har sett filmen</button>
               ) : (
-                <button className="blue-button button" onClick={handleNotWatchedMovie}>Har inte sett filmen</button>
+                <button className="blue-button button" id="not-watched-button" onClick={handleNotWatchedMovie}>Har inte sett filmen</button>
               )}
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Alla lagrade recensioner för aktuell film visas (eller ingen om noll recensioner). */}
+      <h2 id="reviews-h2">Recensioner</h2>
+      <div className="reviews-container">
+        <div className="review-list">
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <div key={review._id} className="review-item">
+                <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()} av <strong>{review.userId.username}</strong></p>
+                <p><strong>Betyg:</strong> {review.rating}/5</p>
+                <p><strong>Recension:</strong> "{review.reviewText}"</p>
+              </div>
+            ))
+          ) : (
+            <p>Inga recensioner har skrivits för denna film ännu.</p>
           )}
         </div>
       </div>

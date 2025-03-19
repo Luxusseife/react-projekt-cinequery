@@ -46,6 +46,7 @@
 }
 
 /* Recensionsformulär. */
+
 .review-form {
     display: flex;
     flex-direction: column;
@@ -56,6 +57,25 @@
     max-width: 60ch;
 }
 
+/* Recensioner. */
+
+#reviews-h2 {
+    text-align: center;
+}
+
+.reviews-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem;
+}
+
+.review-list {
+    border: 4px solid #FFBD59;
+    padding: 1rem;
+    line-height: 1.6;
+    max-width: 60ch;
+}
+
 /* Större skärmar: poster/info sida vid sida. */
 
 @media (min-width: 900px) {
@@ -63,12 +83,12 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-        align-items: center;
+        align-items:start;
         margin: 2rem 0 3rem 0;
     }
 
     .movie-info {
-        margin: 0 auto;
+        margin: 2rem auto 0 auto;
     }
 
     .button-container {
