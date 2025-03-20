@@ -35,6 +35,7 @@ const DetailPage = () => {
   const [formError, setFormError] = useState<string | null>(null);
   const [showReviewForm, setShowReviewForm] = useState<boolean>(false);
   const [hasBeenReviewed, setHasBeenReviewed] = useState<boolean>(false);
+  const [loadingReviews, setLoadingReviews] = useState<boolean>(false);
 
   // Hanterar formulär-toggle.
   const toggleReviewForm = () => {
@@ -56,18 +57,28 @@ const DetailPage = () => {
       // Återställer "har redan recenserat-flaggan" vid laddning av ny film.
       setHasBeenReviewed(false);
 
-      // Hämtar filmdata från API:et utifrån ID och språkparameter (svenska).
+      // Hämtar filmdata från API:et utifrån ID och språkparameter.
       try {
-        const url = `https://api.themoviedb.org/3/movie/${id}?language=sv-SE`;
-        const data = await fetchAPI(url);
 
-        // Sätter state för movie till resultatet.
-        setMovie(data);
+        // Hämtar data på engelska för matchande titel bl.a.
+        const urlEn = `https://api.themoviedb.org/3/movie/${id}?language=en-US`;
+        const dataEn = await fetchAPI(urlEn);
+
+        // Hämta data på svenska för genre och overview.
+        const urlSv = `https://api.themoviedb.org/3/movie/${id}?language=sv-SE`;
+        const dataSv = await fetchAPI(urlSv);
+
+        // Kombinerar resultatet där genre och handling sätts till svenska, resten engelska.
+        setMovie({
+          ...dataEn,
+          genres: dataSv.genres,
+          overview: dataSv.overview,
+        });
 
         // Kontrollerar om filmen är markerad som sedd.
         if (user) {
           const watchedMovies = JSON.parse(localStorage.getItem(`watchedMovies_${user.id}`) || "[]");
-          setHasWatched(watchedMovies.includes(data.id));
+          setHasWatched(watchedMovies.includes(dataEn.id));
         }
 
         // TEST-logg.
@@ -110,6 +121,9 @@ const DetailPage = () => {
 
   // Hämtar lagrade recensioner om aktuell film.
   const fetchMovieReviews = async () => {
+    // Sätter laddningsstatus till true. 
+    setLoadingReviews(true);
+
     try {
       const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews/movie/${id}`);
       if (res.ok) {
@@ -121,6 +135,8 @@ const DetailPage = () => {
       }
     } catch (error) {
       console.error("Kunde inte hämta recensioner:", error);
+    } finally {
+      setLoadingReviews(false);
     }
   };
 
@@ -214,7 +230,7 @@ const DetailPage = () => {
       setScore(null);
       setShowReviewForm(false);
       setHasBeenReviewed(true);
-      await fetchMovieReviews(); 
+      await fetchMovieReviews();
 
       // Hanterar fel om API-anropet misslyckas.
     } catch (error: any) {
@@ -287,9 +303,11 @@ const DetailPage = () => {
       <h2 id="reviews-h2">Recensioner</h2>
       <div className="reviews-container">
         <div className="review-list">
-          {reviews.length > 0 ? (
+          {loadingReviews ? (
+            <p className="message">Laddar recensioner...</p>
+          ) : reviews.length > 0 ? (
             reviews.map((review) => (
-              <div key={review._id} className="review-item">
+              <div key={review._id} className="review-item review-item-mypage">
                 <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()} av <strong>{review.userId.username}</strong></p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> "{review.reviewText}"</p>

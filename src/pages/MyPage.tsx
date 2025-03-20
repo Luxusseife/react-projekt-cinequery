@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { ReviewInterface } from "../types/review.types";
 import "./MyPage.css"
 
+import { showSuccessToast, showErrorToast } from "../helpers/toastHelper";
+
 const MyPage = () => {
 
   // Använder user från AuthContext.
@@ -13,6 +15,7 @@ const MyPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [movieCount, setMovieCount] = useState<number>(0);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   // Kör funktionen för att hämta recensioner vid mount och varje gång user ändras.
   useEffect(() => {
@@ -68,6 +71,57 @@ const MyPage = () => {
     fetchMyReviews();
   }, [user]);
 
+  // Hanterar radering av recensioner. Skickar med ID för vald recension.
+  const handleDelete = async (reviewId: string, movieTitle: string) => {
+
+    // Vid klick på radera-knappen...
+    if (confirmDelete !== reviewId) {
+
+      // Sätter recensionsId för vald film i statet.
+      setConfirmDelete(reviewId);
+
+      // Visar en toast som beskriver hur användaren ska göra för att bekräfta radering
+      showSuccessToast(`Klicka på "radera" igen för att bekräfta — eller vänta så återställs knappen automatiskt.`);
+
+      // Återställer automatiskt till defaultläge efter 5 sekunder.
+      setTimeout(() => setConfirmDelete(null), 5000);
+
+      // Vyn returneras igen.
+      return;
+    }
+
+    // Om användaren klickar på radera igen raderas recensionen.
+    try {
+      const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews/${reviewId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      // Hanterar oväntat svar och kastar då ett fel med backend-fel eller generellt meddelande.
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Något gick fel vid radering.");
+      }
+
+      // Uppdaterar statet genom att filtrera bort den raderade recensionen från listan.
+      setMyReviews((prevReviews) => prevReviews.filter((review) => review._id !== reviewId));
+
+      // Visar bekräftelse-toast.
+      showSuccessToast(`Recensionen för \"${movieTitle}\" har raderats!`);
+
+      // Återställer bekräftelsen direkt vid lyckad radering.
+      setConfirmDelete(null);
+
+      // Hanterar fel om API-anropet misslyckas.
+    } catch (error: any) {
+      console.error(error);
+      showErrorToast(error.message);
+      setConfirmDelete(null);
+    }
+  };
+
   return (
     <>
       <h1>Min sida</h1>
@@ -101,10 +155,19 @@ const MyPage = () => {
           {myReviews.map((review) => (
             <div key={review._id} className="myreviews-listitem">
               <div className="review-item">
-              <h3 id="movietitle-h3">{review.movieTitle}</h3>
+                <h3 id="movietitle-h3">{review.movieTitle}</h3>
                 <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()}</p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> “{review.reviewText}”</p>
+                <div className="button-container mypage">
+                  <button className="yellow-button button">Ändra</button>
+                  <button
+                    className="red-button button"
+                    onClick={() => handleDelete(review._id, review.movieTitle)}
+                  >
+                    {confirmDelete === review._id ? "Bekräfta radering" : "Radera"}
+                  </button>
+                </div>
               </div>
             </div>
           ))}

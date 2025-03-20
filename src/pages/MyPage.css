@@ -41,9 +41,8 @@ h3 {
 }
 
 .myreview-list {
-    display: flex;
-    flex-direction: column;
-    margin: 1rem;
+    justify-content: center;
+    margin: 0 1rem;
 }
 
 .myreviews-listitem {
@@ -52,6 +51,12 @@ h3 {
     line-height: 1.6;
     max-width: 50ch;
     margin: 1rem 0;
+}
+
+.button-container.mypage {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
 }
 
 /* För större skärmar, recensioner läggs på rad i två kolumner. */
