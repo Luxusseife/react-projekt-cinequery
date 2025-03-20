@@ -17,7 +17,52 @@ const MyPage = () => {
   const [movieCount, setMovieCount] = useState<number>(0);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  // Kör funktionen för att hämta recensioner vid mount och varje gång user ändras.
+  // States för formulär. 
+  const [reviewToEditId, setReviewToEditId] = useState<string | null>(null);
+  const [reviewTextToEdit, setReviewTextToEdit] = useState<string>("");
+  const [ratingToEdit, setRatingToEdit] = useState<string>("");
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // Hämtar recensioner skrivna av den inloggade användaren.
+  const fetchMyReviews = async () => {
+
+    // Är ingen inloggad returneras vyn avbryts funktionen.
+    if (!user) return;
+
+    // Visar laddningsstatus och återställer felmeddelande.
+    setLoading(true);
+    setError(null);
+
+    // API-anrop med GET för att hämta användarens recensioner.
+    try {
+      const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews?userId=${user.id}`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      )
+
+      // Hanterar svar från servern.
+      if (res.ok) {
+        const data = await res.json();
+
+        // Vid lyckat svar sparas data i state för recensioner.
+        setMyReviews(data);
+
+        // Vid misslyckat svar visas felmeddelande.
+      } else {
+        const errorData = await res.json();
+        setError(errorData.error || "Något gick fel när recensionerna skulle hämtas.");
+      }
+      // Felhantering där felen sparas i error-state. 
+    } catch (error: any) {
+      setError(error);
+      // Laddningsstatus sätts till false när anropet gjorts.
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Körs vid sidladdning eller när användare ändras. Hämtar statistik och recensioner.
   useEffect(() => {
 
     // Hämtar antal filmer som inloggad användaren markerat som sedda från localStorage.
@@ -28,50 +73,70 @@ const MyPage = () => {
       setMovieCount(watchedMovies.length);
     }
 
-    // Hämtar recensioner skrivna av den inloggade användaren.
-    const fetchMyReviews = async () => {
-
-      // Är ingen inloggad returneras vyn avbryts funktionen.
-      if (!user) return;
-
-      // Visar laddningsstatus och återställer felmeddelande.
-      setLoading(true);
-      setError(null);
-
-      // API-anrop med GET för att hämta användarens recensioner.
-      try {
-        const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews?userId=${user.id}`,
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          }
-        )
-
-        // Hanterar svar från servern.
-        if (res.ok) {
-          const data = await res.json();
-
-          // Vid lyckat svar sparas data i state för recensioner.
-          setMyReviews(data);
-
-          // Vid misslyckat svar visas felmeddelande.
-        } else {
-          const errorData = await res.json();
-          setError(errorData.error || "Något gick fel när recensionerna skulle hämtas.");
-        }
-        // Felhantering där felen sparas i error-state. 
-      } catch (error: any) {
-        setError(error);
-        // Laddningsstatus sätts till false när anropet gjorts.
-      } finally {
-        setLoading(false);
-      }
-    }
-
     // Anropar funktionen.
     fetchMyReviews();
   }, [user]);
 
-  // Hanterar radering av recensioner. Skickar med ID för vald recension.
+  // Hanterar klick på uppdateringsknapp.
+  const handleEditClick = (review: ReviewInterface) => {
+    setReviewToEditId(review._id);
+    setReviewTextToEdit(review.reviewText);
+    setRatingToEdit(review.rating.toString());
+    setFormError(null);
+  };
+
+  // Hanterar submit av redigerat formulär (PUT-anrop).
+  const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>, review: ReviewInterface) => {
+
+    // Förhindrar defaultbeteende.
+    e.preventDefault();
+
+    // Validerar formuläret.
+    if (!reviewTextToEdit || !ratingToEdit) {
+      setFormError("Alla fält måste fyllas i.");
+      return;
+    }
+
+    // Gör ett PUT-anrop mot API:et och skickar med recensionsID.
+    try {
+      const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews/${review._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        // Fyller i formuläret med lagrad information.
+        body: JSON.stringify({
+          movieId: review.movieId,
+          movieTitle: review.movieTitle,
+          userId: user!.id,
+          rating: Number(ratingToEdit),
+          reviewText: reviewTextToEdit.trim(),
+        }),
+      });
+
+      // Hanterar oväntat svar och kastar då ett fel med backend-fel eller generellt meddelande.
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Något gick fel när recensionen skulle uppdateras.");
+      }
+
+      // Visar en bekräftelse-toast vid lyckat uppdatering. 
+      showSuccessToast("Recensionen har uppdaterats!");
+
+      // Återstället state för recensionsID.
+      setReviewToEditId(null);
+
+      // Anropar funktionen för att uppdatera listan.
+      fetchMyReviews();
+
+      // Hanterar fel om API-anropet misslyckas.
+    } catch (error: any) {
+      showErrorToast(error.message);
+    }
+  };
+
+  // Hanterar radering av recension. Kräver dubbelklick för bekräftelse.
   const handleDelete = async (reviewId: string, movieTitle: string) => {
 
     // Vid klick på radera-knappen...
@@ -159,8 +224,10 @@ const MyPage = () => {
                 <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()}</p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> “{review.reviewText}”</p>
+
+                {/* Knappar för att ändra/radera recensioner. */}
                 <div className="button-container mypage">
-                  <button className="yellow-button button">Ändra</button>
+                  <button className="yellow-button button" onClick={() => handleEditClick(review)}>Ändra</button>
                   <button
                     className="red-button button"
                     onClick={() => handleDelete(review._id, review.movieTitle)}
@@ -168,13 +235,61 @@ const MyPage = () => {
                     {confirmDelete === review._id ? "Bekräfta radering" : "Radera"}
                   </button>
                 </div>
+
+                {/* Redigeringsformulär som visas när användaren klickar på uppdatera-knappen. */}
+                {reviewToEditId === review._id && (
+                  <div className="form-container">
+                    <h2 id="form-h2">Redigera recension</h2>
+                    <form className="review-form" onSubmit={(e) => handleEditSubmit(e, review)}>
+                      <label htmlFor="movietitle">Filmtitel:</label>
+                      <input type="text" value={review.movieTitle} readOnly />
+
+                      <label htmlFor="review">Recension:</label>
+                      <textarea
+                        name="review"
+                        id="review"
+                        value={reviewTextToEdit}
+                        onChange={(e) => setReviewTextToEdit(e.target.value)}
+                      />
+
+                      <label htmlFor="score">Betyg:</label>
+                      <select
+                        name="score"
+                        id="score"
+                        value={ratingToEdit}
+                        onChange={(e) => setRatingToEdit(e.target.value)}
+                      >
+                        <option value="">Välj betyg</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+
+                      {/* Eventuella formulärfel visas här. */}
+                      {formError && <p className="error">{formError}</p>}
+
+                      <div className="button-container-tight">
+                        <button type="submit" className="blue-button button">Spara</button>
+                        <button
+                          type="button"
+                          className="red-button button"
+                          onClick={() => setReviewToEditId(null)}
+                        >
+                          Avbryt
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default MyPage
+export default MyPage;
