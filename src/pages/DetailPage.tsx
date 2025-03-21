@@ -125,7 +125,7 @@ const DetailPage = () => {
     setLoadingReviews(true);
 
     try {
-      const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews/movie/${id}`);
+      const res = await fetch(`https://react-projekt-cinequery-api.onrender.com/reviews?movieId=${id}`);
       if (res.ok) {
         const data = await res.json();
         setReviews(data);
@@ -308,7 +308,7 @@ const DetailPage = () => {
           ) : reviews.length > 0 ? (
             reviews.map((review) => (
               <div key={review._id} className="review-item review-item-mypage">
-                <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()} av <strong>{review.userId.username}</strong></p>
+                <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()} av <strong>{review.userId?.username || "Borttagen användare"}</strong></p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> "{review.reviewText}"</p>
               </div>

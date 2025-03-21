@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { ReviewInterface } from "../types/review.types";
+import { Link } from "react-router-dom";
 import "./MyPage.css"
 
 import { showSuccessToast, showErrorToast } from "../helpers/toastHelper";
@@ -220,7 +221,7 @@ const MyPage = () => {
           {myReviews.map((review) => (
             <div key={review._id} className="myreviews-listitem">
               <div className="review-item">
-                <h3 id="movietitle-h3">{review.movieTitle}</h3>
+                <h3 id="movietitle-h3"><Link to={`/${review.movieId}`}>{review.movieTitle}</Link></h3>
                 <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()}</p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> “{review.reviewText}”</p>
