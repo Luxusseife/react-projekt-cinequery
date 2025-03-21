@@ -221,7 +221,7 @@ const MyPage = () => {
           {myReviews.map((review) => (
             <div key={review._id} className="myreviews-listitem">
               <div className="review-item">
-                <h3 id="movietitle-h3"><Link to={`/${review.movieId}`}>{review.movieTitle}</Link></h3>
+                <h3 id="movietitle-h3"><Link to={`/movie/${review.movieId}`}>{review.movieTitle}</Link></h3>
                 <p><strong>Skapad:</strong> {new Date(review.createdAt).toLocaleDateString()}</p>
                 <p><strong>Betyg:</strong> {review.rating}/5</p>
                 <p><strong>Recension:</strong> “{review.reviewText}”</p>
@@ -239,7 +239,7 @@ const MyPage = () => {
 
                 {/* Redigeringsformulär som visas när användaren klickar på uppdatera-knappen. */}
                 {reviewToEditId === review._id && (
-                  <div className="form-container">
+                  <div className="form-container-mypage">
                     <h2 id="form-h2">Redigera recension</h2>
                     <form className="review-form" onSubmit={(e) => handleEditSubmit(e, review)}>
                       <label htmlFor="movietitle">Filmtitel:</label>

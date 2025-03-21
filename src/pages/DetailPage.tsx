@@ -332,12 +332,16 @@ const DetailPage = () => {
 
       {/* Formulär för att skriva en recension för aktuell film. */}
       {user && showReviewForm && !hasBeenReviewed && (
-        <div className="form-container">
+        <div className="form-container-detail">
           <h2 id="form-h2">Skriv recension</h2>
           <br />
           <form className="review-form" onSubmit={handleReviewSubmit}>
             <label htmlFor="movietitle">Filmtitel:</label>
-            <input type="text" name="movietitle" id="movietitle" value={movie.title} readOnly />
+            <input 
+            type="text" 
+            name="movietitle" 
+            id="movietitle" 
+            value={movie.title} readOnly />
 
             <label htmlFor="review">Recension:</label>
             <textarea
@@ -348,7 +352,11 @@ const DetailPage = () => {
             />
 
             <label htmlFor="score">Betyg:</label>
-            <select name="score" id="score" value={score || ""} onChange={(e) => setScore(e.target.value)}>
+            <select 
+            name="score" 
+            id="score" 
+            value={score || ""} 
+            onChange={(e) => setScore(e.target.value)}>
               <option value="">Välj betyg</option>
               <option>1</option>
               <option>2</option>

@@ -13,6 +13,7 @@ const RegistrationPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Properties från hooken useAuth.
   const { register } = useAuth();
@@ -24,6 +25,9 @@ const RegistrationPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     // Förhindrar default-beteende.
     e.preventDefault();
+    
+    // Sätter laddningsstatus till true när anropet startar.
+    setLoading(true);
 
     // Försöker registrera användaren.
     try {
@@ -43,6 +47,9 @@ const RegistrationPage = () => {
       } else {
         showErrorToast("Registreringen misslyckades. Prova igen!");
       }
+      // Återställer laddningsstatus när anropet är klart.
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -71,6 +78,7 @@ const RegistrationPage = () => {
             onChange={(e) => setPassword(e.target.value)} />
           <br />
           {formError && <p className="error-message">{formError}</p>}
+          {loading && <p>Registrerar dig. Vänta ett ögonblick...</p>}
           <br />
           <input type="submit" value="Registrera" />
         </form>

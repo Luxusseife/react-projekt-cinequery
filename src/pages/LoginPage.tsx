@@ -12,6 +12,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Flagga för att se om inloggning sker.
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -35,6 +36,9 @@ const LoginPage = () => {
     // Förhindrar default-beteende.
     e.preventDefault();
 
+    // Sätter laddningsstatus till true.
+    setLoading(true);
+
     // Försöker logga in användaren.
     try {
       // Använder angivna värden för inloggning.
@@ -56,6 +60,9 @@ const LoginPage = () => {
       } else {
         showErrorToast("Inloggningen misslyckades. Prova igen!");
       }
+      // Återställer laddningsstatus när anropet är klart.
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -84,6 +91,7 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)} />
           <br />
           {formError && <p className="error-message">{formError}</p>}
+          {loading && <p>Loggar in dig. Vänta ett ögonblick...</p>}
           <br />
           <input type="submit" value="Logga in" />
         </form>

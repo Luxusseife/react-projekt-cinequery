@@ -40,7 +40,7 @@
 
 /* Formulär. */
 
-.form-container {
+.form-container-detail {
     display: flex;
     flex-direction: column;
     justify-content: center;

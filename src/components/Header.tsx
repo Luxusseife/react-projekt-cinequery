@@ -21,7 +21,9 @@ const Header = () => {
                     <li><NavLink className="header-link" to="/mypage">Min sida</NavLink></li>
                     <li>
                         { // Om ingen användare är inloggad visas länktext "Logga in". Om en användare är inloggad visas en "logga ut"-knapp. 
-                            !user ? <NavLink className="header-link" to="/login">Logga in</NavLink> : <button id="logout-header" className="header-link" onClick={()=> {logout(); navigate("/"); }}>Logga ut</button> 
+                            !user ? <NavLink className="header-link" to="/login">Logga in</NavLink> 
+                            : 
+                            <button id="logout-header" className="header-link" onClick={()=> {logout(); navigate("/"); }}>Logga ut</button> 
                         }
                     </li>
                 </ul>

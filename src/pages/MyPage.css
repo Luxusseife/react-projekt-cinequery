@@ -31,12 +31,12 @@ h3 {
 }
 
 #movietitle-h3 a {
-    text-decoration: none;
+    text-decoration: underline;
     color: inherit;
 }
 
 #movietitle-h3 a:hover {
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .myreviews-container {
@@ -47,6 +47,14 @@ h3 {
     width: 100%;
     max-width: 940px;
     margin: 0 auto;
+}
+
+.form-container-mypage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 2rem 0;
 }
 
 .myreview-list {
