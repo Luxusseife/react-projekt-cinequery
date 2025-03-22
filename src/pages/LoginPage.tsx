@@ -91,7 +91,7 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)} />
           <br />
           {formError && <p className="error-message">{formError}</p>}
-          {loading && <p>Loggar in dig. Vänta ett ögonblick...</p>}
+          {loading && <p className="error-message">Loggar in dig. Vänta ett ögonblick...</p>}
           <br />
           <input type="submit" value="Logga in" />
         </form>

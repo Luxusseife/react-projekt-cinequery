@@ -78,7 +78,7 @@ const RegistrationPage = () => {
             onChange={(e) => setPassword(e.target.value)} />
           <br />
           {formError && <p className="error-message">{formError}</p>}
-          {loading && <p>Registrerar dig. Vänta ett ögonblick...</p>}
+          {loading && <p className="error-message">Registrerar dig. Vänta ett ögonblick...</p>}
           <br />
           <input type="submit" value="Registrera" />
         </form>
